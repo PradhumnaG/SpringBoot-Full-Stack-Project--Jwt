@@ -47,7 +47,13 @@ public class SecurityConfig {
                                 "/send-verify-otp",
                                 "/verify-otp",
                                 "/logout",
-                                "/is-authenticated" // Added later for frontend state check
+                                "/is-authenticated", // Added later for frontend state check
+                                // Swagger/OpenAPI endpoints
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/swagger-ui/index.html"
                         ).permitAll() // [00:40:26] Public endpoints
                         .anyRequest().authenticated() // All other requests require authentication
                 )

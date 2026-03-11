@@ -7,6 +7,9 @@ import com.example.demo.io.ResetPasswordRequest;
 import com.example.demo.service.AppUserDetailsService;
 import com.example.demo.service.ProfileService;
 import com.example.demo.utils.JwtUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +33,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
+@Tag(name = "Authentication", description = "Authentication endpoints for user login, registration, and password reset")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final AppUserDetailsService appUserDetailsService;
@@ -39,6 +43,7 @@ public class AuthController {
 
     // ── POST /register ─────────────────────────────────────────────────────────
     @PostMapping("/register")
+    @Operation(summary = "Register a new user", description = "Creates a new user account with email, password, and name")
     public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
         try {
             String email = body.get("email");
@@ -57,6 +62,7 @@ public class AuthController {
 
     // ── POST /login ────────────────────────────────────────────────────────────
     @PostMapping("/login")
+    @Operation(summary = "User login", description = "Authenticates user with email and password, returns JWT token")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {
             authenticate(request.getEmail(), request.getPassword());
@@ -113,6 +119,7 @@ public class AuthController {
     }
 
     @GetMapping("/is-authenticated")
+    @Operation(summary = "Check authentication status", description = "Verifies if the current user is authenticated")
     public ResponseEntity<Boolean> isAuthenticated(@CurrentSecurityContext(expression = "authentication.name") String email) {
 
         return ResponseEntity.ok(email != null);
@@ -125,6 +132,7 @@ public class AuthController {
         }
 }*/
     @PostMapping("/reset-password")
+    @Operation(summary = "Reset password", description = "Resets user password using OTP verification")
     public void resetPassword(@Valid @RequestBody ResetPasswordRequest request){
         try{
             profileService.resetPassword(request.getEmail(),request.getOtp(),request.getNewPassword());
@@ -134,6 +142,8 @@ public class AuthController {
         }
     }
     @PostMapping("/send-otp")
+    @Operation(summary = "Send OTP", description = "Sends OTP to the authenticated user's email for verification")
+    @SecurityRequirement(name = "Bearer Authentication")
     public void sendVerifyOtp(@CurrentSecurityContext(expression = "authentication.name") String email){
         try{
             profileService.sendOtp(email);
@@ -143,6 +153,8 @@ public class AuthController {
         }
     }
     @PostMapping("verify-otp")
+    @Operation(summary = "Verify OTP", description = "Verifies the OTP sent to user's email")
+    @SecurityRequirement(name = "Bearer Authentication")
     public void verifyEmail(@RequestBody Map<String,Object> request,@CurrentSecurityContext(expression = "authentication.name") String email){
         if (request.get("otp").toString() == null) {
 
