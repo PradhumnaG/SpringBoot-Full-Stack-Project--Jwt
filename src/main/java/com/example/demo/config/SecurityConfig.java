@@ -50,10 +50,10 @@ public class SecurityConfig {
                                 "/is-authenticated", // Added later for frontend state check
                                 // Swagger/OpenAPI endpoints
                                 "/v3/api-docs",
-                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
-                                "/swagger-ui/index.html"
+                                "/webjars/**"
                         ).permitAll() // [00:40:26] Public endpoints
                         .anyRequest().authenticated() // All other requests require authentication
                 )
